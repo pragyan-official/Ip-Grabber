@@ -10,19 +10,22 @@ app.use(express.static('public')); // Assuming your HTML and CSS files are in th
 
 // Track visitor information
 app.post('/track-visit', async (req, res) => {
-    const visitorIP = req.ip; // Get visitor IP
-    // You can use an external API to get location details based on IP
-    const response = await fetch(`https://ipapi.co/${visitorIP}/json/`);
+    // Get the visitor IP address from the x-forwarded-for header
+    const visitorIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const ipAddress = visitorIP.split(',')[0]; // Take the first IP if multiple
+
+    // Use an external API to get location details based on IP
+    const response = await fetch(`https://ipapi.co/${ipAddress}/json/`);
     const locationData = await response.json();
 
     // Push visitor info to logs
     visitorLogs.push({
-        ip: visitorIP,
+        ip: ipAddress,
         city: locationData.city || 'Unknown',
         region: locationData.region || 'Unknown',
         country: locationData.country || 'Unknown',
         isp: locationData.org || 'Unknown',
-        timestamp: new Date()
+        timestamp: new Date().toLocaleString() // Format timestamp
     });
 
     res.status(200).send('Tracked');

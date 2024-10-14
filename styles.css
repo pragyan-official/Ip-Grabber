@@ -1,0 +1,97 @@
+/* styles.css */
+
+/* General Reset */
+body, h1, h2, h3, p, table {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif; /* Modern font */
+  background-color: #f4f4f4; /* Light background */
+}
+
+/* Centering the Container */
+.container {
+  background: white;
+  border-radius: 10px;
+  padding: 40px;
+  max-width: 500px; /* Max width for better readability */
+  width: 90%; /* Responsive width */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  margin: 50px auto; /* Center the container */
+}
+
+/* Title Styles */
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Form Styles */
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Input Fields */
+input[type="text"], input[type="email"], input[type="password"] {
+  padding: 15px;
+  margin-bottom: 20px; /* Space between inputs */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px; /* Larger font size */
+}
+
+/* Button Styles */
+button {
+  padding: 15px;
+  background-color: #2575fc; /* Button color */
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-size: 18px; /* Larger font size */
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #6a11cb; /* Hover effect */
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+th {
+  background-color: #2575fc; /* Header color */
+  color: white; /* Header text color */
+  font-weight: 600;
+}
+
+tbody tr {
+  background-color: rgba(0, 0, 0, 0.03); /* Row background */
+}
+
+tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.05); /* Hover effect */
+}
+
+tbody tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.02); /* Alternating row colors */
+}
+
+/* Responsive Styles */
+@media (max-width: 480px) {
+  .container {
+      margin: 20px;
+      padding: 20px;
+  }
+}

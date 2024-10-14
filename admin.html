@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <title>Admin Page</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Page</h1>
+        <p style="text-align: center;">Details of Visitors:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>IP Address</th>
+                    <th>ISP</th>
+                    <th>Location</th>
+                </tr>
+            </thead>
+            <tbody id="visitorTableBody">
+                <!-- Visitor details will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        fetch('/admin')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById('visitorTableBody');
+                data.forEach(visitor => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td>${visitor.username}</td><td>${visitor.ip}</td><td>${visitor.isp}</td><td>${visitor.location}</td>`;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching visitors:', error));
+    </script>
+</body>
+</html>

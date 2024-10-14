@@ -1,63 +1,69 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
+
+let visitorLogs = [];
 
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static('public')); // Assuming your HTML and CSS files are in the 'public' directory
 
-let visitors = [];
+// Track visitor information
+app.post('/track-visit', async (req, res) => {
+    const visitorIP = req.ip; // Get visitor IP
+    // You can use an external API to get location details based on IP
+    const response = await fetch(`https://ipapi.co/${visitorIP}/json/`);
+    const locationData = await response.json();
 
-// Endpoint to register a visitor
-app.post('/register', async function(req, res) {
-    const { username } = req.body;
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    // Push visitor info to logs
+    visitorLogs.push({
+        ip: visitorIP,
+        city: locationData.city || 'Unknown',
+        region: locationData.region || 'Unknown',
+        country: locationData.country || 'Unknown',
+        isp: locationData.org || 'Unknown',
+        timestamp: new Date()
+    });
 
-    // Fetch ISP and location information
-    try {
-        const ipResponse = await fetch(`http://ip-api.com/json/${ip}`);
-        const ipData = await ipResponse.json();
-        
-        const isp = ipData.isp || 'Unknown';
-        const location = `${ipData.city}, ${ipData.regionName}, ${ipData.country}` || 'Unknown';
-
-        visitors.push({ username, ip, isp, location });
-        res.status(200).json({ message: 'Registered successfully!' });
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ message: 'Error processing registration' });
-    }
+    res.status(200).send('Tracked');
 });
 
-// New endpoint to track visits
-app.post('/track-visit', async function(req, res) {
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-
-    // Fetch ISP and location information
-    try {
-        const ipResponse = await fetch(`http://ip-api.com/json/${ip}`);
-        const ipData = await ipResponse.json();
-        
-        const isp = ipData.isp || 'Unknown';
-        const location = `${ipData.city}, ${ipData.regionName}, ${ipData.country}` || 'Unknown';
-
-        // Check if the visitor is already recorded
-        const existingVisitor = visitors.find(visitor => visitor.ip === ip);
-        if (!existingVisitor) {
-            visitors.push({ username: 'Guest', ip, isp, location }); // Mark as a guest
-        }
-        res.status(200).json({ message: 'Visit recorded successfully!' });
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ message: 'Error processing visit' });
-    }
+// Serve admin page
+app.get('/admin', (req, res) => {
+    res.send(`
+        <html>
+        <head>
+            <title>Admin Page</title>
+            <link rel="stylesheet" href="styles.css">
+        </head>
+        <body>
+            <h1>Visitor Logs</h1>
+            <table>
+                <tr>
+                    <th>IP Address</th>
+                    <th>City</th>
+                    <th>Region</th>
+                    <th>Country</th>
+                    <th>ISP</th>
+                    <th>Timestamp</th>
+                </tr>
+                ${visitorLogs.map(visitor => `
+                    <tr>
+                        <td>${visitor.ip}</td>
+                        <td>${visitor.city}</td>
+                        <td>${visitor.region}</td>
+                        <td>${visitor.country}</td>
+                        <td>${visitor.isp}</td>
+                        <td>${visitor.timestamp}</td>
+                    </tr>
+                `).join('')}
+            </table>
+        </body>
+        </html>
+    `);
 });
 
-// Endpoint to get visitor data
-app.get('/admin', function(req, res) {
-    res.json(visitors);
-});
-
-app.listen(PORT, function() {
+// Start the server
+app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
